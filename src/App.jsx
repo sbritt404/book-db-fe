@@ -1,6 +1,6 @@
 import React from 'react';
-import BookList from './components/Book/BookList';
 import Header from './components/Header/Header';
+import BookList from './components/Book/BookList';
 
 function App() {
   return (
@@ -8,7 +8,7 @@ function App() {
       <Header />
       <BookList />
     </div>
-  )
+  );
 }
 
 export default App;
