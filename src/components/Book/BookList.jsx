@@ -1,92 +1,46 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import './BookList.css'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import BookCard from './BookCard';
+import './BookList.css'; 
 
-function BookList() {
-    const [bookList, setBookList] = useState([]);
-    const [bookInput, setBookInput] = useState({
-        title: '',
-        author: '',
-        publishedYear: ''
-    })
+const BookList = () => {
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        async function fetchBooks() {
-            try {
-                const response = await axios.get('http://localhost:3000/api/books/get-all-books');
-                setBookList(response.data.data);
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        fetchBooks();
-    }, [])
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await axios.get('https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json', {
+          params: { 'api-key': 'STzRl6ut1tLqv6jLl9AKdQcKaAaL1VOm' },
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        setBooks(response.data.results);
+      } catch (error) {
+        setError('Failed to fetch books.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setBookInput((prevInput) => ({ ...prevInput, [name]: value }));
-    }
+    fetchBooks();
+  }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await axios.post('http://localhost:3000/api/books/create-book', bookInput);
-            setBookInput({
-                title: '',
-                author: '',
-                publishedYear: ''
-            });
-            const response = await axios.get('http://localhost:3000/api/books/get-all-books');
-            setBookList(response.data.data);
-        } catch (error) {
-            console.error(error);
-        }
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
-    }
-
-    return (
-        <div className='BookList'>
-            <div className="form-div">
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="title"
-                        placeholder="Title"
-                        value={bookInput.title}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type="text"
-                        name="author"
-                        placeholder="Author"
-                        value={bookInput.author}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type="number"
-                        name="publishedYear"
-                        placeholder="Published Year"
-                        value={bookInput.publishedYear}
-                        onChange={handleInputChange}
-                    />
-                    <button type="submit">Add Book</button>
-                </form>
-            </div>
-            <div>
-                <ul>
-                    {bookList.map((book) => (
-                        <li key={book._id}>
-                            {book.title} by {book.author} ({book.publishedYear})
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </div>
-    )
-
-}
-
-
-
+  return (
+    <div className="book-list">
+      <h1>NYT Bestsellers</h1>
+      <div className="book-grid">
+        {books.map((book, index) => (
+          <BookCard key={index} book={book} />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export default BookList;

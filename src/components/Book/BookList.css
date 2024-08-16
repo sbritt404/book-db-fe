@@ -1,26 +1,10 @@
-.BookList {
-    padding: 20px;
+.book-list {
+  padding: 20px;
 }
 
-.form-div {
-    margin-bottom: 20px;
-}
-
-input {
-    margin-right: 10px;
-    padding: 5px;
-}
-
-button {
-    padding: 5px 10px;
-}
-
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    color:aliceblue;
-    margin: 5px 0;
+.book-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
 }
